@@ -8,8 +8,6 @@ import PIL.ImageDraw as ID
 import PIL.ImageFont as IF
 import pdb
 
-_NODE_SCALE = 0.5
-
 def write_txt(img_draw, txt, x,y, unit_width, color):
     """
     x,y are the center of txt
@@ -24,10 +22,10 @@ def write_txt(img_draw, txt, x,y, unit_width, color):
 
 def draw_node(img_draw, idx, x,y, unit, fill="white", outline="black",
         label="", label_color="black"):
-    r = _NODE_SCALE*unit
+    import draw.tree.macro as macro
+    r = macro.NODE_SCALE*unit
     img_draw.ellipse([x-r, y-r, x+r, y+r], fill=fill, outline=outline)
     write_txt(img_draw, label, x,y, r, label_color)
-    import draw.tree.macro as macro
     macro.nodes[idx] = np.array((x,y))
 
 
@@ -36,7 +34,8 @@ def draw_subtree(img_draw, idx, x, y, unit,
         node_outline="black", tree_outline="black",
         node_label="", tree_label="",
         n_label_col="black", t_label_col="black"):
-    node_r = _NODE_SCALE*unit
+    import draw.tree.macro as macro
+    node_r = macro.NODE_SCALE*unit
     tri_bottom = 4*unit
     tri_height = 5*unit
     # draw subtree root
