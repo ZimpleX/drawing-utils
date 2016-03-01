@@ -8,16 +8,40 @@ import PIL.ImageDraw as ID
 import PIL.ImageFont as IF
 import pdb
 
+_NODE_SCALE = 0.5
+
+def write_txt(img_draw, txt, x,y, unit_width, color):
+    """
+    x,y are the center of txt
+    """
+    import draw.font as f
+    font, _ = f.font_util.adjust_font_size(unit_width)
+    dx, dy = font.getsize(txt)
+    x -= dx/2
+    y -= dy/2
+    img_draw.text([x,y], txt, fill=color, font=font)
+
+
+def draw_node(img_draw, idx, x,y, unit, fill="white", outline="black",
+        label="", label_color="black"):
+    r = _NODE_SCALE*unit
+    img_draw.ellipse([x-r, y-r, x+r, y+r], fill=fill, outline=outline)
+    write_txt(img_draw, label, x,y, r, label_color)
+    import draw.tree.macro as macro
+    macro.nodes[idx] = np.array((x,y))
+
+
 def draw_subtree(img_draw, idx, x, y, unit, 
         node_fill="white", tree_fill="blue", 
         node_outline="black", tree_outline="black",
         node_label="", tree_label="",
         n_label_col="black", t_label_col="black"):
-    node_r = 0.5*unit
+    node_r = _NODE_SCALE*unit
     tri_bottom = 4*unit
     tri_height = 5*unit
     # draw subtree root
-    img_draw.ellipse([x-node_r, y-node_r, x+node_r, y+node_r], fill=node_fill, outline=node_outline)
+    draw_node(img_draw, idx, x,y, unit, fill=node_fill, outline=node_outline, label=node_label, label_color=n_label_col)
+    #img_draw.ellipse([x-node_r, y-node_r, x+node_r, y+node_r], fill=node_fill, outline=node_outline)
     # draw tree (triangle)
     tri_pts = [0.]*6
     tri_pts[0] = x
@@ -27,11 +51,4 @@ def draw_subtree(img_draw, idx, x, y, unit,
     tri_pts[4] = tri_pts[0] + tri_bottom/2
     tri_pts[5] = tri_pts[3]
     img_draw.polygon(tri_pts, fill=tree_fill, outline=tree_outline)
-    # set macro
-    import draw.tree.macro as macro
-    macro.subtree_root[idx] = np.array((x,y))
-    # add text
-    import draw.font as f
-    font, _ = f.font_util.adjust_font_size(node_r)
-    img_draw.text([x-0.5*node_r, y-0.7*node_r], node_label, fill=n_label_col, font=font)
-    
+   

@@ -1,5 +1,4 @@
 import numpy as np
 
-# center for roots (x,y) of subtree
-subtree_root = np.zeros((100,2))
-
+# center for nodes (x,y) of subtree
+nodes = np.zeros((100,2))
