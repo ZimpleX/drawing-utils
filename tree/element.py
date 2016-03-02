@@ -30,7 +30,7 @@ def draw_node(img_draw, idx, x,y, unit, fill="white", outline="black",
 
 
 def draw_subtree(img_draw, idx, x, y, unit, 
-        node_fill="white", tree_fill="blue", 
+        node_fill="white", tree_fill="#ADD8E6", 
         node_outline="black", tree_outline="black",
         node_label="", tree_label="",
         n_label_col="black", t_label_col="black"):
