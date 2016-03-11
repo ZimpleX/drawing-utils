@@ -95,7 +95,7 @@ class chip:
             pin_y = (b_r+1)*(self.chan_wid+self.clb_wid) - (b_r-w_r//1)*self.clb_wid
         
         self.draw.line([cross_x,cross_y,pin_x,pin_y], fill=fill,width=width)
-        diag = 1/16*self.chan_wid
+        diag = 1/8*self.chan_wid
         self.draw.line([cross_x-diag,cross_y-diag,cross_x+diag,cross_y+diag], fill=fill)
         self.draw.line([cross_x-diag,cross_y+diag,cross_x+diag,cross_y-diag], fill=fill)
 
@@ -106,8 +106,8 @@ class chip:
         y_ctr = self.chan_wid + 0.5*self.clb_wid + r*(self.chan_wid+self.clb_wid)
         self.draw.text([x_ctr-dx/2, y_ctr-dy/2], txt, fill=fill, font=font)
         
-    def label_sig(self, r,c, txt, fill='black'):
-        font, _ = ft.adjust_font_size(self.chan_wid*0.15)
+    def label_sig(self, r,c, txt, fill='black', k_size=0.15):
+        font, _ = ft.adjust_font_size(self.chan_wid*k_size)
         dx, dy = font.getsize(txt)
         if r//1 == r:   # wire in y direction
             x_ctr = self.wire_pos[(r,c)][0]

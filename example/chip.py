@@ -4,8 +4,7 @@ import PIL.ImageDraw as ID
 import numpy as np
 
 
-
-if __name__ == '__main__':
+def example1():
     U = 30
     c = chip.element.chip("draw/example/chip1.png", 3*U, 5*U, 3, 4)
     c.add_track(1/4, 1, True, 0)
@@ -52,3 +51,42 @@ if __name__ == '__main__':
     c.label_sig(0,2.5,'k',fill='blue')
 
     c.save()
+
+
+def example2():
+    U = 30
+    c = chip.element.chip("draw/example/chip2.png", 3*U, 2*U, 3, 6)
+    c.add_track(2/3,1,True,0)
+    c.add_track(1/3,4,True,1)
+    c.add_track(1/3,1,False,0)
+    c.add_track(2/3,4,False,2)
+
+    c.label_clb(0,4,'Sink')
+    c.label_sig(1,1/3,'sig',k_size=0.3)
+    c.sig_flow(1,1/3)
+    c.sig_flow(2/3,1)
+    c.sig_flow(2/3,2)
+    c.sig_flow(2/3,3)
+    c.sig_flow(2/3,4)
+    c.sig_flow(1/3,1,fill='green')
+    c.sig_flow(0,13/3,fill='red')
+    c.sig_flow(4/3,1,fill='blue')
+    c.sig_flow(0,14/3,fill='blue')
+
+    c.connect(4/3,1,0,14/3,fill='blue')
+    c.connect_pin(0,14/3,0,4,fill='blue')
+    c.connect(2/3,1,2/3,2)
+    c.connect(2/3,2,2/3,3)
+    c.connect(2/3,3,2/3,4)
+    c.connect(2/3,1,1,1/3)
+    c.connect(1/3,1,1,1/3,fill='green')
+    c.connect(2/3,4,0,13/3)
+    c.connect(1/3,1,0,13/3,fill='green')
+    c.connect_pin(0,13/3,0,4)
+
+    c.save()
+
+
+if __name__ == '__main__':
+    example1()
+    example2()
