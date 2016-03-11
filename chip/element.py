@@ -61,10 +61,10 @@ class chip:
                     self.draw.line([x,y0,x,y1], fill='black')
                     self.wire_pos[(0,c+track_fraction)] = [x,y0,x,y1]
                 
-    def sig_flow(self, r, c, fill='red', width=3):
+    def sig_flow(self, r, c, fill='red', width=6):
         self.draw.line(self.wire_pos[(r,c)], fill=fill, width=width)
 
-    def connect(self, r0, c0, r1, c1, fill='red', width=1):
+    def connect(self, r0, c0, r1, c1, fill='red', width=3):
         p0 = np.array(self.wire_pos[(r0,c0)][0:2])
         p1 = np.array(self.wire_pos[(r0,c0)][2:4])
         p2 = np.array(self.wire_pos[(r1,c1)][0:2])
@@ -79,7 +79,7 @@ class chip:
         e = (idx%2==0) and list(p2) or list(p3)
         self.draw.line(s+e, fill=fill, width=width)
     
-    def connect_pin(self, w_r,w_c, b_r,b_c, fill='red'):
+    def connect_pin(self, w_r,w_c, b_r,b_c, fill='red',width=3):
         """
         wire row / column & clb row / column
         """
@@ -87,15 +87,15 @@ class chip:
             cross_y = self.chan_wid + 0.5*self.clb_wid + b_r*(self.chan_wid+self.clb_wid)
             cross_x = self.wire_pos[(w_r,w_c)][0]
             pin_y = cross_y
-            pin_x = (b_c+1)*(self.chan_wid+self.clb_wid) + (b_c-w_c//1)*self.chan_wid
+            pin_x = (b_c+1)*(self.chan_wid+self.clb_wid) - (b_c-w_c//1)*self.clb_wid
         else:
             cross_x = self.chan_wid + 0.5*self.clb_wid + b_c*(self.chan_wid+self.clb_wid)
             cross_y = self.wire_pos[(w_r,w_c)][1]
             pin_x = cross_x
-            pin_y = (b_r+1)*(self.chan_wid+self.clb_wid) + (b_r-w_r//1)*self.chan_wid
+            pin_y = (b_r+1)*(self.chan_wid+self.clb_wid) - (b_r-w_r//1)*self.clb_wid
         
-        self.draw.line([cross_x,cross_y,pin_x,pin_y], fill=fill)
-        diag = 1/8*self.chan_wid
+        self.draw.line([cross_x,cross_y,pin_x,pin_y], fill=fill,width=width)
+        diag = 1/16*self.chan_wid
         self.draw.line([cross_x-diag,cross_y-diag,cross_x+diag,cross_y+diag], fill=fill)
         self.draw.line([cross_x-diag,cross_y+diag,cross_x+diag,cross_y-diag], fill=fill)
 
@@ -128,7 +128,8 @@ class chip:
                 x = x_ctr
             y = y_ctr-dy/2
         self.draw.text([x, y], txt, fill=fill, font=font)
-    
+
+
 
     def save(self):
         self.img.save(self.img_out, "PNG")
