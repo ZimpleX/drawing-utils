@@ -101,7 +101,13 @@ class chip:
 
     def label_clb(self, r,c, txt, fill='black'):
         font, _ = ft.adjust_font_size(self.clb_wid*0.2)
-        dx, dy = font.getsize(txt)
+        # some bug for getsize, when txt contains newline
+        dx = 0
+        dy = 0
+        for s in txt.split('\n'):
+            dx_, dy_ = font.getsize(s)
+            dx = max(dx, dx_)
+            dy += dy_
         x_ctr = self.chan_wid + 0.5*self.clb_wid + c*(self.chan_wid+self.clb_wid)
         y_ctr = self.chan_wid + 0.5*self.clb_wid + r*(self.chan_wid+self.clb_wid)
         self.draw.text([x_ctr-dx/2, y_ctr-dy/2], txt, fill=fill, font=font)
