@@ -14,9 +14,9 @@ def example1():
     c.add_track(2/4, 2, False, 0)
     c.add_track(3/4, 2, False, 1)
     
-    c.label_clb(0,1,'MUL\n(0)')
-    c.label_clb(1,2,'MUL\n(1)')
-    c.label_clb(2,3,'MUL\n(2)')
+    c.label_clb(0,1,' MUL\n(0,1)')
+    c.label_clb(1,2,' MUL\n(1,2)')
+    c.label_clb(2,3,' MUL\n(2,3)')
 
     c.sig_flow(0.5,0)
     c.connect_pin(0.5,0,0,1)
