@@ -1,4 +1,5 @@
 import numpy as np
+from math import ceil, floor
 from logf.printf import printf
 
 import PIL.Image as I
@@ -34,7 +35,7 @@ class scheduler:
     def _draw_axis(self, ax_y, axis_len, axis_col, width, idx_l):
         assert self.draw is not None
         ax_x0 = self.unit_x
-        ax_x_end = (axis_len+2)*self.unit_x
+        ax_x_end = ceil((axis_len+2)*self.unit_x)
         ax_x1 = ax_x_end - 0.4*self.unit_x
         self.draw.line([ax_x0, ax_y, ax_x1, ax_y], fill=axis_col, width=width)
         # mark
@@ -84,10 +85,10 @@ class scheduler:
                         break
         num_track = reduce(lambda _1,_2: _1+(_2 is not None), track, 0)
         # draw
-        self.img = I.new('RGB', ((axis_len+2)*self.unit_x, (num_track+2)*self.unit_y), 'white')
+        self.img = I.new('RGB', (ceil((axis_len+2)*self.unit_x), ceil((num_track+2)*self.unit_y)), 'white')
         self.draw = ID.Draw(self.img)
         ax_y  = (num_track+1)*self.unit_y
-        self._draw_axis(ax_y, axis_len, axis_col, width, list(range(min_start_time,max_end_time+1)))
+        self._draw_axis(ax_y, axis_len, axis_col, width, list(range(floor(min_start_time),ceil(max_end_time+1))))
        
         for ti, tk in enumerate(track):
             if tk is None:
@@ -98,6 +99,12 @@ class scheduler:
                 x0 = (jb[0] - min_start_time + 1)*self.unit_x
                 x1 = (jb[1] - min_start_time + 1)*self.unit_x
                 self.draw.rectangle([x0,y0,x1,y1], fill=jb[2])
+    
+    def add_title(self, title):
+        assert self.draw is not None
+        font, _ = ft.adjust_font_size(self.unit_x*0.2)
+        dx, dy = font.getsize(title)
+        self.draw.text([0,0], title, fill='black', font=font)
     
     def save(self):
         if self.img is None:
