@@ -1,5 +1,6 @@
 from logf.printf import printf
 import numpy as np
+from math import ceil
 
 import PIL.Image as I
 import PIL.ImageDraw as ID
@@ -9,9 +10,16 @@ import draw.font.font_util as ft
 
 import pdb
 
+def draw_rect_width(x1, y1, x2, y2, draw, width):
+    fill='black'
+    draw.line([x1,y1,x2,y1], width=width, fill=fill)
+    draw.line([x1,y2,x2,y2], width=width, fill=fill)
+    draw.line([x1,y1,x1,y2], width=width, fill=fill)
+    draw.line([x2,y1,x2,y2], width=width, fill=fill)
+
 
 class chip:
-    def __init__(self, img_out, clb_wid, chan_wid, row, col):
+    def __init__(self, img_out, clb_wid, chan_wid, row, col, width=2):
         self.img_out = img_out
         self.clb_wid = clb_wid
         self.chan_wid = chan_wid
@@ -25,13 +33,15 @@ class chip:
             for c in range(self.col):
                 x = self.chan_wid + c*(self.chan_wid + self.clb_wid)
                 y = self.chan_wid + r*(self.chan_wid + self.clb_wid)
-                self.draw.rectangle([x,y,x+self.clb_wid,y+self.clb_wid],outline='black')
+                # self.draw.rectangle([x,y,x+self.clb_wid,y+self.clb_wid],outline='black')
+                draw_rect_width(x,y,x+self.clb_wid,y+self.clb_wid, self.draw, ceil(width))
         self.wire_pos = {}
 
-    def add_track(self, track_fraction, wlen, is_x_dir, start_clb):
+    def add_track(self, track_fraction, wlen, is_x_dir, start_clb, width=1):
         """
         start_clb index starts from 0
         """
+        width = ceil(width)
         if is_x_dir:
             for r in range(self.row-1):
                 y = (r+1)*(self.chan_wid+self.clb_wid) + track_fraction*self.chan_wid
@@ -39,12 +49,12 @@ class chip:
                     x0 = self.chan_wid + (self.chan_wid+self.clb_wid)*c
                     x1 = x0 + wlen*self.clb_wid + (wlen-1)*self.chan_wid
                     x1 = min(self.W-self.chan_wid, x1)
-                    self.draw.line([x0,y,x1,y], fill="black")
+                    self.draw.line([x0,y,x1,y], fill="black", width=width)
                     self.wire_pos[(r+track_fraction, c)] = [x0,y,x1,y]
                 if start_clb > 0:
                     x0 = self.chan_wid
                     x1 = x0 + start_clb*self.clb_wid + (start_clb-1)*self.chan_wid
-                    self.draw.line([x0,y,x1,y], fill="black")
+                    self.draw.line([x0,y,x1,y], fill="black", width=width)
                     self.wire_pos[(r+track_fraction, 0)] = [x0,y,x1,y]
         else:
             for c in range(self.col-1):
@@ -53,18 +63,20 @@ class chip:
                     y0 = self.chan_wid + (self.chan_wid+self.clb_wid)*r
                     y1 = y0 + wlen*self.clb_wid + (wlen-1)*self.chan_wid
                     y1 = min(self.H-self.chan_wid, y1)
-                    self.draw.line([x,y0,x,y1], fill='black')
+                    self.draw.line([x,y0,x,y1], fill='black', width=width)
                     self.wire_pos[(r,c+track_fraction)] = [x,y0,x,y1]
                 if start_clb > 0:
                     y0 = self.chan_wid
                     y1 = y0 + start_clb*self.clb_wid + (start_clb-1)*self.chan_wid
-                    self.draw.line([x,y0,x,y1], fill='black')
+                    self.draw.line([x,y0,x,y1], fill='black', width=width)
                     self.wire_pos[(0,c+track_fraction)] = [x,y0,x,y1]
                 
     def sig_flow(self, r, c, fill='red', width=6):
+        width = ceil(width)
         self.draw.line(self.wire_pos[(r,c)], fill=fill, width=width)
 
     def connect(self, r0, c0, r1, c1, fill='red', width=3):
+        width = ceil(width)
         p0 = np.array(self.wire_pos[(r0,c0)][0:2])
         p1 = np.array(self.wire_pos[(r0,c0)][2:4])
         p2 = np.array(self.wire_pos[(r1,c1)][0:2])
@@ -83,6 +95,7 @@ class chip:
         """
         wire row / column & clb row / column
         """
+        width = ceil(width)
         if w_r // 1 == w_r:     # wire in y direction
             cross_y = self.chan_wid + 0.5*self.clb_wid + b_r*(self.chan_wid+self.clb_wid)
             cross_x = self.wire_pos[(w_r,w_c)][0]
@@ -96,8 +109,8 @@ class chip:
         
         self.draw.line([cross_x,cross_y,pin_x,pin_y], fill=fill,width=width)
         diag = 1/8*self.chan_wid
-        self.draw.line([cross_x-diag,cross_y-diag,cross_x+diag,cross_y+diag], fill=fill)
-        self.draw.line([cross_x-diag,cross_y+diag,cross_x+diag,cross_y-diag], fill=fill)
+        self.draw.line([cross_x-diag,cross_y-diag,cross_x+diag,cross_y+diag], fill=fill, width=width)
+        self.draw.line([cross_x-diag,cross_y+diag,cross_x+diag,cross_y-diag], fill=fill, width=width)
 
     def label_clb(self, r,c, txt, fill='black'):
         font, _ = ft.adjust_font_size(self.clb_wid*0.2)
